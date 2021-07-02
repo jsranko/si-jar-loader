@@ -1,0 +1,7 @@
+security:
+  enable: true
+  keystore:
+    name: ./src/main/resources/jarloader.p12
+    type: jks
+    alias: pgmsig
+    password: changeit
