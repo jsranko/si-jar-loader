@@ -27,13 +27,17 @@ public class JarLoader extends URLClassLoader{
 
         try {
 
+            System.out.println("Public key wird geprüft...");
+
             // get configuration
             ConfigHandler handler;
 
             String configPath = System.getProperty("application.config");
             if (configPath == null) {
+                System.out.println("Default-Konfiguration wird verwendet.");
                 handler = ConfigHandler.getInstance();
             } else {
+                System.out.println(String.format("Konfiguration %s wird verwendet.", configPath));
                 handler = ConfigHandler.getInstance(Paths.get(configPath));
             }
 
