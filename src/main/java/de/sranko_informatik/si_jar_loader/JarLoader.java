@@ -92,4 +92,8 @@ public class JarLoader extends URLClassLoader{
             for (int i = 0; i < paths.length; i++)
                 addFile(paths[i]);
     }
+
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        return super.loadClass(name);
+    }
 }
