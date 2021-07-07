@@ -32,7 +32,7 @@ public class JarLoader extends URLClassLoader{
             // get configuration
             ConfigHandler handler;
 
-            String configPath = System.getProperty("application.config");
+            String configPath = System.getProperty("si.jarloader.config");
             if (configPath == null) {
                 System.out.println("Default-Konfiguration wird verwendet.");
                 handler = ConfigHandler.getInstance();
