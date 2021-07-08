@@ -1,5 +1,6 @@
 package de.sranko_informatik.si_jar_loader;
 
+import javax.management.IntrospectionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -82,30 +83,26 @@ public class JarLoaderNew {
         return false;
     }
 
-    public void addFile(String path) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
+    public void addFile(String path) throws IntrospectionException, MalformedURLException {
         File jarFile = new File(path);
         if (jarFile.exists()) {
             System.out.println("File existiert");
         }
-        URL[] rsrcUrls = new URL[]{jarFile.toURI().toURL()};
-        System.out.println(Thread.currentThread().getContextClassLoader().getClass().getName());
-        URLClassLoader childClassLoader = new URLClassLoader(rsrcUrls, Thread.currentThread().getContextClassLoader());
-        Thread.currentThread().setContextClassLoader(childClassLoader);
+        addURLToSystemClassLoader(jarFile.toURI().toURL());
 
     }
 
-    private static ClassLoader getParentClassLoader() throws InvocationTargetException, IllegalAccessException {
-        // On Java8, it is ok to use a null parent class loader, but, starting with Java 9,
-        // we need to provide one that has access to the restricted list of packages that
-        // otherwise would produce a SecurityException when loaded
+    public static void addURLToSystemClassLoader(URL url) throws IntrospectionException {
+        URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
+
         try {
-            // We use reflection here because the method ClassLoader.getPlatformClassLoader()
-            // is only present starting from Java 9
-            Method platformClassLoader = ClassLoader.class.getMethod("getPlatformClassLoader", (Class[])null); //$NON-NLS-1$
-            return (ClassLoader) platformClassLoader.invoke(null, (Object[]) null);
-        } catch (NoSuchMethodException e) {
-            // This is a safe value to be used on Java 8 and previous versions
-            return null;
+            Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+            method.setAccessible(true);
+            method.invoke(systemClassLoader, new Object[]{url});
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new IntrospectionException("Error when adding url to system ClassLoader ");
         }
     }
 }

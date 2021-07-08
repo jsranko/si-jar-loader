@@ -1,14 +1,19 @@
 package de.sranko_informatik.si_jar_loader;
 
+import javax.management.IntrospectionException;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.KeyException;
 import java.sql.*;
+import java.util.Arrays;
 
 public class Application {
 
-    public static void main(String[] args) throws KeyException, InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException, SQLException {
+    public static void main(String[] args) throws KeyException, InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException, SQLException, IntrospectionException {
         Connection connect = null;
         Statement statement = null;
         PreparedStatement preparedStatement = null;
@@ -25,13 +30,26 @@ public class Application {
 
         // widows
         String jarPath = "./mysql-connector-java-8.0.25.jar";
+
+        Class<?> classVar = Application.class;
+
         loader.addFile(jarPath);
 
+        //Print class loader name loaded this class
+        System.out.println("Current Class Loader : "
+                + Arrays.toString(((URLClassLoader) classVar.getClassLoader()).getURLs()));
+
+        System.out.println("Thread Class Loader : "
+                + Arrays.toString(((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()));
+
         // load the class
-        Class.forName("com.mysql.cj.jdbc.Driver", true, Thread.currentThread().getContextClassLoader());
+        //Class.forName("com.mysql.cj.jdbc.Driver", true, Thread.currentThread().getContextClassLoader());
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Setup the connection with the DB
         connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
                 + "user=sqluser&password=sqluserpw");
     }
+
+
 }
