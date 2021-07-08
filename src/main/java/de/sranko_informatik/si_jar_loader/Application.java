@@ -25,7 +25,7 @@ public class Application {
 
         // widows
         String jarPath = "./mysql-connector-java-8.0.25.jar";
-        loader.addFile(new File(jarPath));
+        loader.addFile(jarPath);
 
         // load the class
         Class.forName("com.mysql.cj.jdbc.Driver", true, Thread.currentThread().getContextClassLoader());

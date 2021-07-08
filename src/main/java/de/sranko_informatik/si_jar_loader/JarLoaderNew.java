@@ -82,8 +82,8 @@ public class JarLoaderNew {
         return false;
     }
 
-    public void addFile(File jarFile) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
-
+    public void addFile(String path) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
+        File jarFile = new File(path);
         if (jarFile.exists()) {
             System.out.println("File existiert");
         }
