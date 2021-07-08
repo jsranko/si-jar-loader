@@ -2,15 +2,18 @@ package de.sranko_informatik.si_jar_loader;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestJarLoader {
 
     @Test
     public void testLoadMySQL() {
-
-        String classToLoad = "com.mysql.jdbc.Driver";
 
         try {
 
@@ -28,10 +31,11 @@ public class TestJarLoader {
 
             loader.addFile(jarPath);
 
-            // load the class
-            loader.loadClass(classToLoad);
+            loader.loadClass("com.mysql.jdbc.Driver");
+
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             assertEquals(1, 0);
         }
 

@@ -1,6 +1,9 @@
 package de.sranko_informatik.si_jar_loader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -14,13 +17,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class JarLoader extends URLClassLoader{
+public class JarLoaderNew {
 
-    public JarLoader(String publicKey) throws KeyException, InvocationTargetException, IllegalAccessException {
-
-        super(new URL[0], Thread.currentThread().getContextClassLoader());
-        //super(new URL[0], getParentClassLoader());
-        //super(new URL[0]);
+    public JarLoaderNew(String publicKey) throws KeyException, InvocationTargetException, IllegalAccessException {
 
         if (!isPublicKeyValid(publicKey)) {
             throw new KeyException("Bad public key.");
@@ -83,23 +82,16 @@ public class JarLoader extends URLClassLoader{
         return false;
     }
 
-    public void addFile(String path) throws MalformedURLException {
-        // construct the jar url path
-        String urlPath = "jar:file:" + path + "!/";
+    public void addFile(File jarFile) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
 
-        // invoke the base method
-        addURL(new URL(urlPath));
-        //Thread.currentThread().setContextClassLoader(this);
-    }
+        if (jarFile.exists()) {
+            System.out.println("File existiert");
+        }
+        URL[] rsrcUrls = new URL[]{jarFile.toURI().toURL()};
+        System.out.println(Thread.currentThread().getContextClassLoader().getClass().getName());
+        URLClassLoader childClassLoader = new URLClassLoader(rsrcUrls, Thread.currentThread().getContextClassLoader());
+        Thread.currentThread().setContextClassLoader(childClassLoader);
 
-    public void addFile(String paths[]) throws MalformedURLException {
-        if (paths != null)
-            for (int i = 0; i < paths.length; i++)
-                addFile(paths[i]);
-    }
-
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return super.loadClass(name);
     }
 
     private static ClassLoader getParentClassLoader() throws InvocationTargetException, IllegalAccessException {
