@@ -16,6 +16,7 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class JarLoaderNew {
@@ -88,13 +89,19 @@ public class JarLoaderNew {
         if (jarFile.exists()) {
             System.out.println("File existiert");
         }
-        addURLToSystemClassLoader(jarFile.toURI().toURL());
 
+        ClassLoader classLoader = addURLToSystemClassLoader(jarFile.toURI().toURL());
+
+        System.out.println("(afer) Class Loader : "
+                + Arrays.toString(((URLClassLoader) classLoader).getURLs()));
     }
 
-    public static void addURLToSystemClassLoader(URL url) throws IntrospectionException {
+    public static ClassLoader addURLToSystemClassLoader(URL url) throws IntrospectionException {
         URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
         Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
+
+        System.out.println("(before) Class Loader : "
+                + Arrays.toString(systemClassLoader.getURLs()));
 
         try {
             Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
@@ -104,5 +111,7 @@ public class JarLoaderNew {
             t.printStackTrace();
             throw new IntrospectionException("Error when adding url to system ClassLoader ");
         }
+
+        return systemClassLoader;
     }
 }

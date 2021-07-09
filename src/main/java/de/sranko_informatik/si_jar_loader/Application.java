@@ -29,7 +29,7 @@ public class Application {
                 "SQIDAQAB");
 
         // widows
-        String jarPath = "./mysql-connector-java-8.0.25.jar";
+        String jarPath = "mysql-connector-java-8.0.25.jar";
 
         Class<?> classVar = Application.class;
 
