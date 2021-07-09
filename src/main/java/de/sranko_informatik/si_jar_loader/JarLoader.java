@@ -1,6 +1,10 @@
 package de.sranko_informatik.si_jar_loader;
 
-import java.io.*;
+import javax.management.IntrospectionException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -12,15 +16,12 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
-public class JarLoader extends URLClassLoader{
+public class JarLoader {
 
     public JarLoader(String publicKey) throws KeyException, InvocationTargetException, IllegalAccessException {
-
-        super(new URL[0], Thread.currentThread().getContextClassLoader());
-        //super(new URL[0], getParentClassLoader());
-        //super(new URL[0]);
 
         if (!isPublicKeyValid(publicKey)) {
             throw new KeyException("Bad public key.");
@@ -83,37 +84,34 @@ public class JarLoader extends URLClassLoader{
         return false;
     }
 
-    public void addFile(String path) throws MalformedURLException {
-        // construct the jar url path
-        String urlPath = "jar:file:" + path + "!/";
-
-        // invoke the base method
-        addURL(new URL(urlPath));
-        //Thread.currentThread().setContextClassLoader(this);
-    }
-
-    public void addFile(String paths[]) throws MalformedURLException {
-        if (paths != null)
-            for (int i = 0; i < paths.length; i++)
-                addFile(paths[i]);
-    }
-
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return super.loadClass(name);
-    }
-
-    private static ClassLoader getParentClassLoader() throws InvocationTargetException, IllegalAccessException {
-        // On Java8, it is ok to use a null parent class loader, but, starting with Java 9,
-        // we need to provide one that has access to the restricted list of packages that
-        // otherwise would produce a SecurityException when loaded
-        try {
-            // We use reflection here because the method ClassLoader.getPlatformClassLoader()
-            // is only present starting from Java 9
-            Method platformClassLoader = ClassLoader.class.getMethod("getPlatformClassLoader", (Class[])null); //$NON-NLS-1$
-            return (ClassLoader) platformClassLoader.invoke(null, (Object[]) null);
-        } catch (NoSuchMethodException e) {
-            // This is a safe value to be used on Java 8 and previous versions
-            return null;
+    public void addFile(String path) throws IntrospectionException, MalformedURLException {
+        File jarFile = new File(path);
+        if (jarFile.exists()) {
+            //System.out.println("File existiert");
         }
+
+        ClassLoader classLoader = addURLToSystemClassLoader(jarFile.toURI().toURL());
+
+        //System.out.println("(afer) Class Loader : "
+        //        + Arrays.toString(((URLClassLoader) classLoader).getURLs()));
+    }
+
+    public static ClassLoader addURLToSystemClassLoader(URL url) throws IntrospectionException {
+        URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
+
+        //System.out.println("(before) Class Loader : "
+        //        + Arrays.toString(systemClassLoader.getURLs()));
+
+        try {
+            Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+            method.setAccessible(true);
+            method.invoke(systemClassLoader, new Object[]{url});
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new IntrospectionException("Error when adding url to system ClassLoader ");
+        }
+
+        return systemClassLoader;
     }
 }

@@ -31,9 +31,6 @@ public class TestJarLoader {
 
             loader.addFile(jarPath);
 
-            loader.loadClass("com.mysql.jdbc.Driver");
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
             assertEquals(1, 0);
