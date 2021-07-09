@@ -92,16 +92,16 @@ public class JarLoaderNew {
 
         ClassLoader classLoader = addURLToSystemClassLoader(jarFile.toURI().toURL());
 
-        System.out.println("(afer) Class Loader : "
-                + Arrays.toString(((URLClassLoader) classLoader).getURLs()));
+        //System.out.println("(afer) Class Loader : "
+        //        + Arrays.toString(((URLClassLoader) classLoader).getURLs()));
     }
 
     public static ClassLoader addURLToSystemClassLoader(URL url) throws IntrospectionException {
         URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
         Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
 
-        System.out.println("(before) Class Loader : "
-                + Arrays.toString(systemClassLoader.getURLs()));
+        //System.out.println("(before) Class Loader : "
+        //        + Arrays.toString(systemClassLoader.getURLs()));
 
         try {
             Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
