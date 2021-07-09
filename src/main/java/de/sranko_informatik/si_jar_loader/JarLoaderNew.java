@@ -87,7 +87,7 @@ public class JarLoaderNew {
     public void addFile(String path) throws IntrospectionException, MalformedURLException {
         File jarFile = new File(path);
         if (jarFile.exists()) {
-            System.out.println("File existiert");
+            //System.out.println("File existiert");
         }
 
         ClassLoader classLoader = addURLToSystemClassLoader(jarFile.toURI().toURL());
